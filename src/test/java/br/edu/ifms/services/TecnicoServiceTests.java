@@ -43,6 +43,7 @@ public class TecnicoServiceTests {
 	private PageImpl<Tecnico> page;
 	
 	@BeforeEach
+	
 	void setUp() throws Exception{
 		idExistente = 2L;
 		idInexistente = 30L;
