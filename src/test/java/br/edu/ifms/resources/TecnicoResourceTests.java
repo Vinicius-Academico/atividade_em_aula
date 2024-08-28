@@ -30,8 +30,9 @@ import br.edu.ifms.services.exceptions.DataBaseException;
 import br.edu.ifms.services.exceptions.ResourceNotFoundException;
 import br.edu.ifms.tests.Factory;
 
-@WebMvcTest(TecnicoResourceTests.class)
+@WebMvcTest(TecnicoResource.class)
 public class TecnicoResourceTests {
+	
 	@Autowired
 	private MockMvc mockMvc;
 	
@@ -39,7 +40,7 @@ public class TecnicoResourceTests {
 	private TecnicoService service;
 	
 	@Autowired
-	private ObjectMapper objectMapper; 
+	private ObjectMapper objectMapper;
 	
 	private TecnicoDTO tecnicoDTO;
 	private PageImpl<TecnicoDTO> page;
@@ -49,7 +50,7 @@ public class TecnicoResourceTests {
 		
 	@BeforeEach
 	void setUp() throws Exception {
-		idExistente = 1L;
+		idExistente = 2L;
 		idInexistente = 100L;
 		idDependente = 1L;
 			
@@ -60,9 +61,9 @@ public class TecnicoResourceTests {
 		when(service.findById(idExistente)).thenReturn(tecnicoDTO);
 		when(service.findById(idInexistente)).thenThrow(ResourceNotFoundException.class);
 		
-		//update
+		//UPDATE
 		when(service.update(eq(idExistente), any())).thenReturn(tecnicoDTO);
-		when(service.update(eq(idInexistente), any())).thenThrow(ResourceNotFoundException.class);		
+		when(service.update(eq(idInexistente), any())).thenThrow(ResourceNotFoundException.class);
 		
 		//Insert
 		when(service.insert(any())).thenReturn(tecnicoDTO);
@@ -71,18 +72,19 @@ public class TecnicoResourceTests {
 		doNothing().when(service).delete(idExistente);
 		doThrow(ResourceNotFoundException.class).when(service).delete(idInexistente);
 		doThrow(DataBaseException.class).when(service).delete(idDependente);
-		
 	}
 	
 	@Test
 	public void updateDeveriaRetornarTecnicoQuandoIdExistente() throws Exception {
-		String jsonBody = objectMapper.writeValueAsString(tecnicoDTO);
+		
+		String jsonBody = objectMapper.writeValueAsString(tecnicoDTO);	
 		
 		ResultActions result = mockMvc.perform(put("/tecnicos/{id}", idExistente)
 				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON));
-				
+				.accept(MediaType.APPLICATION_JSON)
+			);
+			
 		result.andExpect(status().isOk());
 		result.andExpect(jsonPath("$.id").exists());
 		result.andExpect(jsonPath("$.nome").exists());
@@ -90,13 +92,14 @@ public class TecnicoResourceTests {
 
 	@Test
 	public void updateDeveriaRetornarNotFoundQuandoIdInexistente() throws Exception {
-		String jsonBody = objectMapper.writeValueAsString(tecnicoDTO);
+		String jsonBody = objectMapper.writeValueAsString(tecnicoDTO);	
 		
 		ResultActions result = mockMvc.perform(put("/tecnicos/{id}", idInexistente)
 				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON));
-				
+				.accept(MediaType.APPLICATION_JSON)
+			);
+			
 		result.andExpect(status().isNotFound());
 	}
 
@@ -104,7 +107,8 @@ public class TecnicoResourceTests {
 	@Test
 	public void findAllPagedDeveriaRetornarPage() throws Exception {
 		ResultActions result = mockMvc.perform(get("/tecnicos")
-				.accept(MediaType.APPLICATION_JSON));
+					.accept(MediaType.APPLICATION_JSON)
+				);
 				
 		result.andExpect(status().isOk());
 	}
@@ -112,8 +116,8 @@ public class TecnicoResourceTests {
 	@Test
 	public void findByIdDeveriaRetornarTecnicoQuandoIdExistente() throws Exception {
 		ResultActions result = mockMvc.perform(get("/tecnicos/{id}", idExistente)
-				.accept(MediaType.APPLICATION_JSON));
-				
+				.accept(MediaType.APPLICATION_JSON)
+			);			
 		result.andExpect(status().isOk());
 		result.andExpect(jsonPath("$.id").exists());
 	}
@@ -121,9 +125,20 @@ public class TecnicoResourceTests {
 	@Test
 	public void findByIdDeveriaRetornarExceptionNotFoundQuandoIdInexistente() throws Exception {
 		ResultActions result = mockMvc.perform(get("/tecnicos/{id}", idInexistente)
-				.accept(MediaType.APPLICATION_JSON));
-				
+				.accept(MediaType.APPLICATION_JSON)
+			);			
 		result.andExpect(status().isNotFound());
 	}
-
+	
 }
+
+
+
+
+
+
+
+
+
+
+
