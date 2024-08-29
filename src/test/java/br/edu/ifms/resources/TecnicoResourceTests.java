@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,8 +77,7 @@ public class TecnicoResourceTests {
 	}
 	
 	@Test
-	public void updateDeveriaRetornarTecnicoQuandoIdExistente() throws Exception {
-		
+	public void updateDeveriaRetornarTecnicoQuandoIdExistente() throws Exception {		
 		String jsonBody = objectMapper.writeValueAsString(tecnicoDTO);	
 		
 		ResultActions result = mockMvc.perform(put("/tecnicos/{id}", idExistente)
@@ -130,15 +131,35 @@ public class TecnicoResourceTests {
 		result.andExpect(status().isNotFound());
 	}
 	
+	@Test
+	public void insertDeveriaRetornarCreatedQuandoDadosValidos() throws Exception {
+	    String jsonBody = objectMapper.writeValueAsString(tecnicoDTO);   
+	    
+	    ResultActions result = mockMvc.perform(post("/tecnicos")
+	            .content(jsonBody)
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .accept(MediaType.APPLICATION_JSON)
+	        );
+	    
+	    result.andExpect(status().isCreated());
+	    result.andExpect(jsonPath("$.id").exists());
+	    result.andExpect(jsonPath("$.nome").exists());
+	}
+	
+	@Test
+	public void deleteDeveriaRetornarNoContentQuandoIdExistir() throws Exception {
+	    ResultActions result = mockMvc.perform(delete("/tecnicos/{id}", idExistente)
+	            .accept(MediaType.APPLICATION_JSON)
+	        );           
+	    result.andExpect(status().isNoContent());
+	}
+
+	@Test
+	public void deleteDeveriaRetornarNotFoundQuandoIdNaoExistir() throws Exception {
+	    ResultActions result = mockMvc.perform(delete("/tecnicos/{id}", idInexistente)
+	            .accept(MediaType.APPLICATION_JSON)
+	        );           
+	    result.andExpect(status().isNotFound());
+	}
+
 }
-
-
-
-
-
-
-
-
-
-
-
